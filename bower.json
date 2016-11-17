@@ -12,5 +12,10 @@
     "paper-calculator": "Polymer/paper-calculator#^0.5.0",
     "topeka-elements": "Polymer/topeka-elements#^0.5.0",
     "more-elements": "Polymer/more-elements#^0.5.0"
+  },
+  "resolutions": {
+    "polymer": "^0.5",
+    "webcomponentsjs": "^0.5.0",
+    "google-apis": "^1.1.1"
   }
 }
