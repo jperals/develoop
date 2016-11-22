@@ -2,14 +2,13 @@ class Gitlab {
 
     constructor(options) {
         this.gists = {};
-        console.log('create new Gitlab');
         this.token = options.token;
     }
 
     getGist(id) {
         console.log('getGist');
         var gist;
-        if(typeof id == 'undefined' || this.gists[id] == 'undefined') {
+        if(typeof id == 'undefined' || typeof this.gists[id] == 'undefined') {
             let options = {
                 token: this.token,
                 id: id
@@ -45,17 +44,18 @@ class Gist {
     }
 
     create(options, callback) {
-        console.log('create');
+        console.log('create gist');
         let headers = new Headers();
         headers.append('PRIVATE-TOKEN', this.token);
         headers.append('Content-Type', 'application/json');
-        let content = options.files['designer.html'];
+        let content = options.files['designer.html'].content;
         let reqBody = {
             code: content,
             file_name: this.id,
             title: this.id,
             visibility_level: 10 // Internal
         };
+        console.log('content:', content);
         let opts = {
             headers: headers,
             method: "POST",
@@ -75,30 +75,59 @@ class Gist {
     }
 
     read(callback) {
-        console.log('read');
+        console.log('read gist');
         let headers = new Headers();
         headers.append('PRIVATE-TOKEN', this.token);
-        let body = {
-            file_name: this.id
-        };
+        headers.append('Content-Type', 'application/json');
         let options = {
             headers: headers,
-            method: "GET",
-            body: body
+            method: "GET"
         };
         fetch(
-            this.host + '/api/v3/projects/1/snippets/' + this.id,
+            this.host + '/api/v3/projects/1/snippets/' + this.id + '/raw',
             options)
-            .then(function(error, response) {
+            .then(function(response) {
+                return response.text();
+            })
+            .then(function(response) {
                 if(typeof callback == 'function') {
-                    callback(error, response);
+                    callback(undefined, response);
                 }
-            }
-        )
+            })
+            .catch(function(error) {
+                console.error('There has been a problem with your fetch operation: ' + error.message);
+            });
     }
 
     update(options, callback) {
-        console.log('update');
+        console.log('update gist');
+        let headers = new Headers();
+        headers.append('PRIVATE-TOKEN', this.token);
+        headers.append('Content-Type', 'application/json');
+        let content = options.files['designer.html'].content;
+        let reqBody = {
+            code: content,
+            file_name: this.id,
+            title: this.id,
+            visibility_level: 10 // Internal
+        };
+        console.log('content:', content);
+        let opts = {
+            headers: headers,
+            method: "PUT",
+            body: JSON.stringify(reqBody)
+        };
+        fetch(
+            this.host + '/api/v3/projects/1/snippets/' + this.id,
+            opts)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(json) {
+                if(typeof callback == 'function') {
+                    callback(undefined, json);
+                }
+            })
     }
 
     createId() {

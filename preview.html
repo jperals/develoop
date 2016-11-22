@@ -40,7 +40,8 @@
   <design-gist-element-preview id="preview"></design-gist-element-preview>
   <script>
     addEventListener('polymer-ready', function() {
-      var fileId = window.location.hash.replace('#', '')
+      var fileId = window.location.hash.replace('#', '');
+      console.log('fileId:', fileId);
       document.getElementById('preview').open(fileId);
     })
 

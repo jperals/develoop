@@ -213,8 +213,8 @@ limitations under the License.
         var gist = this.gitlab.getGist(id);
         gist.read(function(error, response) {
           if (!error) {
-            this.fire('files-loaded', response.files);
-            this.toast('Loaded files from ' + response.html_url);
+            this.fire('files-loaded', response);
+//            this.toast('Loaded files from ' + response.html_url);
           } else {
             if (error.error == 401) { // unauthorized
               this.token = '';
