@@ -2,3 +2,4 @@ components
 /.htaccess
 *.sublime-project
 *.sublime-workspace
+settings.js
