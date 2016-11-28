@@ -5,12 +5,12 @@
     <template>
         <style>
             .grey-paper {
-                box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
                 border: 1px solid #ccc;
                 border-radius: 3px;
                 margin: 5px;
                 padding: 5px;
-                background-color: rgba(242,242,242,1);
+                background-color: rgba(242, 242, 242, 1);
             }
 
             #form {
@@ -19,7 +19,7 @@
             }
 
             #signIn-screen {
-                color: rgba(96,96,96,1);
+                color: rgba(96, 96, 96, 1);
                 display: none;
                 position: fixed;
                 left: calc(50% - 125px);
@@ -31,7 +31,7 @@
                 vertical-align: middle;
             }
 
-            input[type="text"]{
+            input[type="text"] {
                 display: inline-block;
                 width: 235px;
                 margin: 8px 5px 5px 5px;
@@ -43,7 +43,7 @@
             }
 
             #gitlab-token:focus {
-                border: 1px solid rgba(66,133,244,1);
+                border: 1px solid rgba(66, 133, 244, 1);
                 outline: none;
             }
         </style>
@@ -51,8 +51,6 @@
         <div id="signIn-screen" class="grey-paper">
             <div id="form">
                 <input id="component-name" type="text" placeholder="Component name">
-                <input id="gitlab-token" type="text" on-keyup="{{checkKeyCode}}" placeholder="Gitlab token">
-                <!--<p>Get a <a href="https://github.com/settings/applications" target="_blank">github token</a>.</p>-->
                 <div>
                     <button on-click="{{confirm}}" title="OK">OK</button>
                     <button on-click="{{cancel}}" title="Cancel">Cancel</button>
@@ -69,20 +67,20 @@
             signedIn: false,
             signingIn: false,
 
-            ready: function() {
+            ready: function () {
                 if (!this.token) {
                     this.token = window.localStorage['gitlab-element-token'] || '';
                 }
             },
 
-            signingInChanged: function() {
+            signingInChanged: function () {
                 this.$['signIn-screen'].style.display = this.signingIn ? 'block' : 'none';
                 if (this.signingIn) {
                     this.$['component-name'].focus()
                 }
             },
 
-            tokenChanged: function() {
+            tokenChanged: function () {
                 if (this.token) {
                     this.signedIn = true;
                     window.localStorage['gitlab-element-token'] = this.token;
@@ -99,7 +97,7 @@
                 this.fire('token-changed');
             },
 
-            toast: function(message) {
+            toast: function (message) {
                 this.message = message;
                 this.fire('github-toast', message);
                 /*
@@ -109,53 +107,53 @@
                  */
             },
 
-            clearMessage: function(delay) {
+            clearMessage: function (delay) {
                 if (this.messageTimeout) {
                     clearTimeout(this.messageTimeout);
                 }
                 if (delay === undefined) {
                     delay = 3000;
                 }
-                this.messageTimeout = setTimeout(function() {
+                this.messageTimeout = setTimeout(function () {
                     this.message = '';
                 }.bind(this), delay);
             },
 
-            save: function(description, publicGist, files, callback) {
-                if (!this.gitlab) {
-                    this.toast('No Gitlab connection was established.');
-                    return;
-                }
-
-                var fileId = this.componentName;
-                var gist = this.gitlab.getGist(fileId);
-                gist.create({
-                    'description': description,
-                    'public': publicGist,
-                    'files': files
-                }, function(error, response) {
-                    if (!error) {
-                        window.location.hash = response.id;
-                        this.fire('files-saved', response);
-                        this.toast('Saved files to <a href="' + response.html_url + '">'  + response.html_url + '</a>');
-                    } else {
-                        if (error.error == 401) { // unauthorized
-                            this.token = '';
-                            this.toast('Please sign in using a valid GitHub token.');
-                        } else if (error.error == 403) { // forbidden
-                            this.toast('Sorry, too much anonymous GitHub activity! ' +
-                                    'Please either sign in or try again later.');
-                        } else {
+            save: function (description, publicGist, files, callback) {
+                console.log('save');
+                let headers = new Headers();
+                headers.append('Content-Type', 'application/json');
+                let content = files['index.html'].content;
+                var componentName = this.extractComponentName(content);
+                let reqBody = {
+                    code: content,
+                    componentName: componentName
+                };
+                console.log('content:', content);
+                console.log('componentName:', componentName);
+                let opts = {
+                    headers: headers,
+                    method: "PUT",
+                    body: JSON.stringify(reqBody)
+                };
+                fetch(
+                        '/api/component/',
+                        opts)
+                        .then(function (response) {
+                            window.location.hash = response.componentName;
+                            this.fire('files-saved', response);
+                            this.toast('Saved files to <a href="' + response.html_url + '">' + response.html_url + '</a>');
+                            if (typeof callback == 'function') {
+                                callback(undefined, response);
+                            }
+                        }.bind(this))
+                        .catch(function (error) {
                             console.error(error);
-                        }
-                    }
-                    if (callback) {
-                        callback(error, response);
-                    }
-                }.bind(this));
+                        });
+
             },
 
-            update: function(id, description, publicGist, files, callback) {
+            update: function (id, description, publicGist, files, callback) {
                 if (!this.gitlab) {
                     this.toast('No Gitlab connection was established.');
                     return;
@@ -164,12 +162,12 @@
                 var gist = this.gitlab.getGist(id);
                 gist.update({
                     'description': description,
-                    'files': files,
-                }, function(error, response) {
+                    'files': files
+                }, function (error, response) {
                     if (!error) {
                         window.location.hash = response.title;
                         this.fire('files-updated', response);
-                        this.toast('Saved files to <a href="' + response.html_url + '">'  + response.html_url + '</a>');
+                        this.toast('Saved files to <a href="' + response.html_url + '">' + response.html_url + '</a>');
                     } else {
                         if (error.error == 401) { // unauthorized
                             this.token = '';
@@ -190,13 +188,13 @@
                 }.bind(this));
             },
 
-            load: function(id, callback) {
+            load: function (id, callback) {
                 if (!this.gitlab) {
                     return;
                 }
 
                 var gist = this.gitlab.getGist(id);
-                gist.read(function(error, response) {
+                gist.read(function (error, response) {
                     if (!error) {
                         this.fire('files-loaded', response);
 //            this.toast('Loaded files from ' + response.html_url);
@@ -220,31 +218,42 @@
                 }.bind(this));
             },
 
-            signIn: function() {
+            signIn: function () {
                 this.signingIn = true;
             },
 
-            signOut: function() {
+            signOut: function () {
                 this.token = '';
             },
 
-            confirm: function() {
-                this.token = this.$['gitlab-token'].value;
+            confirm: function () {
                 this.componentName = this.$['component-name'].value;
                 this.signingIn = false;
             },
 
-            cancel: function() {
+            cancel: function () {
                 this.signingIn = false;
             },
 
-            checkKeyCode: function(e) {
+            checkKeyCode: function (e) {
                 if (e.keyCode == 13) { // 'Enter'
                     this.confirm();
                 } else if (e.keyCode == 27) { // 'Escape'
                     this.cancel();
                 }
+            },
+
+            extractComponentName: function (code) {
+                var name;
+                var re = /<polymer-element[^>]*name=(?:'|")([^'"]*)(?:'|")/;
+                var match = code && code.match(re);
+                if (match) {
+                    name = match[1];
+                }
+                console.log('extracted name:', name);
+                return name;
             }
+
         });
     </script>
 </polymer-element>

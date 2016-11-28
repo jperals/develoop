@@ -344,9 +344,6 @@ Polymer({
   },
 
   saveAction: function() {
-    if (!this.ensureSignedIn(this.saveAction)) {
-      return;
-    }
     this.toast = 'Saving...';
     this.toastShowing = true;
     this.save(function() {
@@ -370,9 +367,6 @@ Polymer({
   },
 
   previewAction: function() {
-    if (!this.ensureSignedIn(this.previewAction)) {
-      return;
-    }
     if (this.previewWindow) {
       this.previewWindow.close();
     }
