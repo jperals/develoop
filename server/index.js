@@ -5,6 +5,8 @@ var indentString = require('indent-string');
 var settings = require('./settings');
 var bodyParser = require('body-parser');
 
+const COMPONENTS_ROOT = 'server/components';
+
 require('promise/lib/rejection-tracking').enable(
     {allRejections: true}
 );
@@ -20,16 +22,22 @@ var app = express();
 
 app.use(bodyParser.json());
 app.use(express.static('client'));
+app.use('/components', express.static(COMPONENTS_ROOT));
 
 app.put('/api/component', function(req, res) {
     var code = req.body.code;
-    var componentsRoot = 'server/components';
+    var mainMetadataFile = COMPONENTS_ROOT + '/' + 'metadata.html';
     var componentName = req.body.componentName;
-    var newDir = componentsRoot + '/' + componentName;
-    var metadata = '<x-meta id="' + componentName + '">\n    <template>\n        <' + componentName + '></' + componentName + '>\n    </template>\n    <template id="imports">\n        <link rel="import" href="index.html">\n    </template>\n</x-meta>';
+    var newDir = COMPONENTS_ROOT + '/' + componentName;
+    var metadataFile = newDir + '/metadata.html';
+    var metadata = '<x-meta id="' + componentName + '" label="' + componentName + '">\n    <template>\n        <' + componentName + '></' + componentName + '>\n    </template>\n    <template id="imports">\n        <link rel="import" href="index.html">\n    </template>\n</x-meta>';
+    var metadataMeta = '<link rel="import" href="/components/' + componentName + '/metadata.html">\n';
     fs.mkdir(newDir, function() {
         fs.writeFile(newDir + '/' + 'index.html', code, function() {
-            fs.writeFile(newDir + '/' + 'metadata.html', metadata, function() {
+            fs.writeFile(metadataFile, metadata, function() {
+                fs.appendFile(mainMetadataFile, metadataMeta, function(err) {
+                    console.error(err);
+                });
                 res.send({
                     componentName: req.params.componentName,
                     status: 'OK'
