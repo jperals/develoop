@@ -151,6 +151,10 @@ Polymer({
     document.addEventListener('keydown', 
         this.keydown.bind(this, window));
     window.designWindowLoaded = this.designWindowLoaded.bind(this);
+    window.onhashchange = function() {
+      this.firstLoad = true;
+      this.importsLoaded();
+    }.bind(this);
     this.firstLoad = true;
   },
 
