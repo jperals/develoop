@@ -20,6 +20,11 @@ if(settings.testing) {
 
 var app = express();
 
+app.use(function(req, res, next) {
+    console.log(req.originalUrl);
+    next();
+});
+
 app.use(bodyParser.json());
 app.use(express.static('client'));
 app.use('/components', express.static(COMPONENTS_ROOT));
