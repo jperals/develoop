@@ -6,11 +6,12 @@ license that can be found in the LICENSE file.
 
 <link rel="import" href="../gitlab-elements/gitlab-elements.html">
 <link rel="import" href="design-preview.html">
+<link rel="import" href="../designer-persist/designer-persist.html">
 <link rel="import" href="design-gitlab-info.html">
 
 <polymer-element name="design-gist-element-preview" extends="design-preview-iframe">
 <template>
-  <gitlab-element id="gitlab" on-files-loaded="{{documentLoaded}}"></gitlab-element>
+  <component-save-dialog id="persist"></component-save-dialog>
   <design-gitlab-info id="info"></design-gitlab-info>
   <shadow></shadow>
 </template>
@@ -20,7 +21,7 @@ license that can be found in the LICENSE file.
 Polymer({
   
   open: function(id) {
-    this.$.gitlab.load(id);
+    document.getElementById('persist').load(id);
   },
 
   documentLoaded: function(e, content) {

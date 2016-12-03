@@ -412,7 +412,13 @@ Polymer({
     var id = window.location.hash.replace('#', '');
     if (id) {
       this.fileId = id;
-      this.$.saveDialog.load(id);
+      this.$.saveDialog.load(id)
+      .then(function(content) {
+        this.loadHtml(content);
+      }.bind(this))
+      .catch(function(error) {
+        console.error(error.stack);
+      });
     }
   },
 

@@ -137,7 +137,7 @@
                     body: JSON.stringify(reqBody)
                 };
                 fetch(
-                        '/api/component/',
+                        '/component/',
                         opts)
                         .then(function (response) {
                             window.location.hash = response.componentName;
@@ -188,34 +188,38 @@
                 }.bind(this));
             },
 
-            load: function (id, callback) {
-                if (!this.gitlab) {
-                    return;
-                }
-
-                var gist = this.gitlab.getGist(id);
-                gist.read(function (error, response) {
-                    if (!error) {
-                        this.fire('files-loaded', response);
-//            this.toast('Loaded files from ' + response.html_url);
-                    } else {
-                        if (error.error == 401) { // unauthorized
-                            this.token = '';
-                            this.toast('Please sign in using a valid Gitlab token.');
-                        } else if (error.error == 403) { // forbidden
-                            this.toast('Sorry, too much anonymous Gitlab activity! ' +
-                                    'Please either sign in or try again later.');
-                        } else if (error.error == 404) { // not found
-                            this.toast('The animation was not loaded because it could not ' +
-                                    'be found on Gitlab.');
-                        } else {
-                            console.error(error);
-                        }
-                    }
-                    if (callback) {
-                        callback(error, response);
-                    }
+            load: function (id) {
+                var promise = new Promise(function(resolve, reject)
+                {
+                    console.log('load');
+                    let headers = new Headers();
+                    headers.append('Content-Type', 'application/json');
+//                let content = files['index.html'].content;
+//                var componentName = this.extractComponentName(content);
+                    console.log('componentName:', id);
+                    let opts = {
+                        headers: headers,
+                        method: "GET",
+                        componentName: id
+                    };
+                    fetch(
+                            '/components/' + id + '/index.html',
+                            opts)
+                            .then(function (response) {
+                                return response.text();
+                            })
+                            .then(function(content) {
+//                                window.location.hash = response.componentName;
+                                this.fire('files-saved', content);
+                                this.toast('Saved files to <a href="' + content.html_url + '">' + content.html_url + '</a>');
+                                resolve(content);
+                            }.bind(this))
+                            .catch(function (error) {
+                                reject(error);
+                            });
                 }.bind(this));
+                return promise;
+
             },
 
             signIn: function () {
