@@ -137,10 +137,9 @@
                     body: JSON.stringify(reqBody)
                 };
                 fetch(
-                        '/component/',
+                        '/api/component/',
                         opts)
                         .then(function (response) {
-                            window.location.hash = response.componentName;
                             this.fire('files-saved', response);
                             this.toast('Saved files to <a href="' + response.html_url + '">' + response.html_url + '</a>');
                             if (typeof callback == 'function') {

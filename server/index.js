@@ -37,7 +37,8 @@ app.put('/api/component', function(req, res) {
     var metadataFile = newDir + '/metadata.html';
     var metadata = '<x-meta id="' + componentName + '" label="' + componentName + '">\n    <template>\n        <' + componentName + '></' + componentName + '>\n    </template>\n    <template id="imports">\n        <link rel="import" href="index.html">\n    </template>\n</x-meta>';
     var metadataMeta = '<link rel="import" href="/components/' + componentName + '/metadata.html">\n';
-    fs.mkdir(newDir, function() {
+    fs.mkdir(newDir, function(err) {
+        console.error(err);
         fs.writeFile(newDir + '/' + 'index.html', code, function() {
             fs.writeFile(metadataFile, metadata, function() {
                 fs.appendFile(mainMetadataFile, metadataMeta, function(err) {
