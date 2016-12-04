@@ -33,7 +33,7 @@
 }
 
 core-submenu::shadow #submenu {
-  margin-left: 24px;
+  margin-left: 0;
 }
 
 .group-item {
@@ -52,6 +52,14 @@ core-submenu::shadow #submenu {
   cursor: pointer;
   color: #000;
   white-space: nowrap;
+  display: block;
+  padding-left: 24px;
+  text-decoration: none;
+}
+
+.simple-item:hover {
+  text-decoration: underline;
+  background-color: #f2f2f2;
 }
 
 .grid-item {

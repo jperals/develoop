@@ -23,7 +23,7 @@
   <core-drag-drop on-drag-start="{{dragStart}}"></core-drag-drop>
 
   <template if="{{mode == 'menu'}}">
-    <div flex id="list">
+    <a flex id="list">
 
       <core-menu selectedClass="palette-selected">
         <template repeat="{{categories}}">
@@ -31,7 +31,9 @@
             <span flex class="item-content"></span>
             <core-icon class="item-content" icon="expand-more"></core-icon>
             <template repeat="{{list}}">
-              <div class="simple-item" tag="{{id}}" loaded?="{{importsLoaded}}" ishidden?="{{isHidden}}">{{label}}</div>
+              <a href="#{{label}}" class="simple-item" tag="{{id}}" loaded?="{{importsLoaded}}" ishidden?="{{isHidden}}">
+                {{label}}
+              </a>
             </template>
 
           </core-submenu>
