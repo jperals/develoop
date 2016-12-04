@@ -389,6 +389,7 @@ Polymer({
     files[this.$.saveDialogInfo.fileName] = {content: content};
     var saveCb = function(response) {
       window.location.hash = componentName;
+      this.designer.import(['/components/' + componentName + '/metadata.html'], this.importsLoaded.bind(this));
       if (callback) {
         callback.call(self);
       }
