@@ -119,37 +119,37 @@
                 }.bind(this), delay);
             },
 
-            save: function (description, publicGist, files, callback) {
-                console.log('save');
-                let headers = new Headers();
-                headers.append('Content-Type', 'application/json');
-                let content = files['index.html'].content;
-                var componentName = this.extractComponentName(content);
-                let reqBody = {
-                    code: content,
-                    componentName: componentName
-                };
-                console.log('content:', content);
-                console.log('componentName:', componentName);
-                let opts = {
-                    headers: headers,
-                    method: "PUT",
-                    body: JSON.stringify(reqBody)
-                };
-                fetch(
-                        '/api/component/',
-                        opts)
-                        .then(function (response) {
-                            this.fire('files-saved', response);
-                            this.toast('Saved files to <a href="' + response.html_url + '">' + response.html_url + '</a>');
-                            if (typeof callback == 'function') {
-                                callback(undefined, response);
-                            }
-                        }.bind(this))
-                        .catch(function (error) {
-                            console.error(error);
-                        });
+            save: function (description, publicGist, files, componentName) {
+                var that = this;
+                return new Promise(function(resolve, reject) {
+                    console.log('save');
+                    let headers = new Headers();
+                    headers.append('Content-Type', 'application/json');
+                    let content = files['index.html'].content;
+                    let reqBody = {
+                        code: content,
+                        componentName: componentName
+                    };
+                    console.log('content:', content);
+                    console.log('componentName:', componentName);
+                    let opts = {
+                        headers: headers,
+                        method: "PUT",
+                        body: JSON.stringify(reqBody)
+                    };
+                    fetch(
+                            '/api/component/',
+                            opts)
+                            .then(function (response) {
+                                that.fire('files-saved', response);
+                                that.toast('Saved files to <a href="' + response.html_url + '">' + response.html_url + '</a>');
+                                resolve(response);
+                            })
+                            .catch(function (error) {
+                                reject(error);
+                            });
 
+                });
             },
 
             update: function (id, description, publicGist, files, callback) {
@@ -245,17 +245,6 @@
                     this.cancel();
                 }
             },
-
-            extractComponentName: function (code) {
-                var name;
-                var re = /<polymer-element[^>]*name=(?:'|")([^'"]*)(?:'|")/;
-                var match = code && code.match(re);
-                if (match) {
-                    name = match[1];
-                }
-                console.log('extracted name:', name);
-                return name;
-            }
 
         });
     </script>

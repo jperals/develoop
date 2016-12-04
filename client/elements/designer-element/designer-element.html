@@ -383,11 +383,16 @@ Polymer({
 
   save: function(callback) {
     var self = this;
-    var saveCb = function() {
+    var files = {};
+    var content = this.getContent();
+    var componentName = this.extractComponentName(content);
+    files[this.$.saveDialogInfo.fileName] = {content: content};
+    var saveCb = function(response) {
+      window.location.hash = componentName;
       if (callback) {
         callback.call(self);
       }
-    };
+    }.bind(this);
     var updateCb = function(response) {
       // update fails if gist is some other user's
       // if this happens perform a save.
@@ -395,15 +400,14 @@ Polymer({
         self.fileId = null;
         self.save(callback);
       } else {
-        saveCb();
+        saveCb(response);
       }
     };
-    var options = {};
-    options[this.$.saveDialogInfo.fileName] = {content: this.getContent()};
     if (this.fileId) {
-      this.$.saveDialog.update(this.fileId, 'designer', true, options, updateCb);
+      this.$.saveDialog.update(this.fileId, 'designer', true, files, updateCb);
     } else {
-      this.$.saveDialog.save('designer', true, options, saveCb);
+      this.$.saveDialog.save('designer', true, files, componentName)
+              .then(saveCb);
     }
   },
 
@@ -502,6 +506,17 @@ Polymer({
     if (this.isDirty()) {
       return 'Unsaved changes detected.';
     }
+  },
+
+  extractComponentName: function (code) {
+    var name;
+    var re = /<polymer-element[^>]*name=(?:'|")([^'"]*)(?:'|")/;
+    var match = code && code.match(re);
+    if (match) {
+      name = match[1];
+    }
+    console.log('extracted name:', name);
+    return name;
   }
 
 });
