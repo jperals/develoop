@@ -1,0 +1,28 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<polymer-element name="new-element" attributes="labelText placeholderText">
+
+  <template>
+    <style>    
+      :host {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+    </style>
+    <div>
+      <label>{{ labelText }}</label>
+      <input id="input" type="text" placeholder>
+    </div>
+  </template>
+
+  <script>
+
+    Polymer({
+      
+    });
+
+  </script>
+
+</polymer-element>

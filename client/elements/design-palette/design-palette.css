@@ -49,7 +49,6 @@ core-submenu::shadow #submenu {
   line-height: 40px;
   font-size: 14px;
   font-weight: 500;
-  cursor: pointer;
   color: #000;
   white-space: nowrap;
   display: block;
@@ -63,27 +62,40 @@ core-submenu::shadow #submenu {
   background-color: #f2f2f2;
 }
 
-.simple-item .edit-link {
+.simple-item .item-actions {
   position: absolute;
   right: 7px;
   top: 7px;
   font-size: 90%;
   color: #666;
-  border-radius: 5px;
-  padding: 5px 7px;
-  visibility: hidden;
   line-height: 16px;
+}
+
+.simple-item .item-actions .action {
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 5px;
+  height: 16px;
+  width: 16px;
+  visibility: hidden;
   text-decoration: none;
   background-color: #ddd;
 }
 
-.simple-item:hover .edit-link {
+.simple-item:hover .item-actions .action {
   visibility: visible;
+  color: #333;
 }
 
-.simple-item .edit-link:hover {
+.simple-item .action:hover {
   background-color: #bbbbbb;
-  color: #333;
+}
+
+.simple-item .action svg {
+  margin: 5px;
+  width: 16px;
+  height: 16px;
 }
 
 .grid-item {

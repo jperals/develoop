@@ -13,6 +13,7 @@
 <link rel="import" href="../../components/core-menu/core-menu.html">
 <link rel="import" href="../../components/core-menu/core-submenu.html">
 <link rel="import" href="../../components/core-drag-drop/core-drag-drop.html">
+<link rel="import" href="../designer-persist/designer-persist.html">
 
 <polymer-element name="design-palette" vertical layout attributes="mode categories">
 
@@ -20,10 +21,12 @@
 
   <link rel="stylesheet" href="design-palette.css">
 
+  <component-save-dialog id="persist"></component-save-dialog>
+
   <core-drag-drop on-drag-start="{{dragStart}}"></core-drag-drop>
 
   <template if="{{mode == 'menu'}}">
-    <a flex id="list">
+    <div flex id="list">
 
       <core-menu selectedClass="palette-selected">
         <template repeat="{{categories}}">
@@ -33,7 +36,10 @@
             <template repeat="{{list}}">
               <div class="simple-item" tag="{{id}}" loaded?="{{importsLoaded}}" ishidden?="{{isHidden}}">
                 {{label}}
-                <a class="edit-link" href="#{{label}}">Edit</a>
+                <span class="item-actions">
+                  <core-icon icon="create" class="action" item-id="{{label}}" on-tap="{{edit}}" title="Edit"></core-icon>
+                  <core-icon icon="delete" class="action" item-id="{{label}}" on-tap="{{remove}}" title="Remove"></core-icon>
+                </span>
               </div>
             </template>
 
@@ -87,6 +93,20 @@ Polymer({
       // dropping here sends the item to the bitbucket
       dragInfo.element.remove();
     }
+  },
+
+  remove: function(event) {
+    var id = event.target.attributes.getNamedItem('item-id').value;
+    this.$.persist.delete(id)
+            .then(function() {
+              this.removedElements = this.removedElements || [];
+              this.removedElements.push(id);
+            }.bind(this));
+  },
+
+  edit: function(event) {
+    var id = event.target.attributes.getNamedItem('item-id').value;
+    window.location.hash = id;
   }
 
 });

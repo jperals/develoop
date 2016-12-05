@@ -152,6 +152,34 @@
                 });
             },
 
+            delete: function (componentName) {
+                var that = this;
+                return new Promise(function(resolve, reject) {
+                    let headers = new Headers();
+                    headers.append('Content-Type', 'application/json');
+                    let reqBody = {
+                        name: componentName
+                    };
+                    let opts = {
+                        headers: headers,
+                        method: "DELETE",
+                        body: JSON.stringify(reqBody)
+                    };
+                    fetch(
+                            '/api/component/',
+                            opts)
+                            .then(function (response) {
+                                that.fire('component-deleted', response);
+                                that.toast('Saved files to <a href="' + response.html_url + '">' + response.html_url + '</a>');
+                                resolve(response);
+                            })
+                            .catch(function (error) {
+                                reject(error);
+                            });
+
+                });
+            },
+
             update: function (id, description, publicGist, files, callback) {
                 if (!this.gitlab) {
                     this.toast('No Gitlab connection was established.');

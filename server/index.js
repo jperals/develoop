@@ -1,11 +1,14 @@
-var express = require('express');
-var fs = require('fs');
-var gitlab = require('./gitlab');
-var indentString = require('indent-string');
-var settings = require('./settings');
-var bodyParser = require('body-parser');
+const express = require('express');
+const fs = require('fs');
+const indentString = require('indent-string');
+const bodyParser = require('body-parser');
+const readline = require('readline');
+const rmdirAsync = require('./rmdirAsync');
+const settings = require('./settings');
+const gitlab = require('./gitlab');
 
 const COMPONENTS_ROOT = 'server/components';
+const MAIN_METADATA_FILE = COMPONENTS_ROOT + '/metadata.html';
 
 require('promise/lib/rejection-tracking').enable(
     {allRejections: true}
@@ -29,9 +32,9 @@ app.use(bodyParser.json());
 app.use(express.static('client'));
 app.use('/components', express.static(COMPONENTS_ROOT));
 
+
 app.put('/api/component', function(req, res) {
     var code = req.body.code;
-    var mainMetadataFile = COMPONENTS_ROOT + '/' + 'metadata.html';
     var componentName = req.body.componentName;
     var newDir = COMPONENTS_ROOT + '/' + componentName;
     var metadataFile = newDir + '/metadata.html';
@@ -41,7 +44,7 @@ app.put('/api/component', function(req, res) {
         console.error(err);
         fs.writeFile(newDir + '/' + 'index.html', code, function() {
             fs.writeFile(metadataFile, metadata, function() {
-                fs.appendFile(mainMetadataFile, metadataMeta, function(err) {
+                fs.appendFile(MAIN_METADATA_FILE, metadataMeta, function(err) {
                     console.error(err);
                 });
                 res.send({
@@ -52,6 +55,65 @@ app.put('/api/component', function(req, res) {
         })
     });
 });
+
+
+function deleteComponentFromMetadata(name) {
+    return new Promise(function(resolve, reject) {
+        fs.readFile(MAIN_METADATA_FILE, 'utf8', function(err, data) {
+            if(err) {
+                reject(err);
+            }
+            let regExp = new RegExp('<link rel="import" href="\/components\/' + name + '\/metadata\.html">');
+            var result = data.replace(regExp, '');
+            fs.writeFile(MAIN_METADATA_FILE, result, 'utf8', function(err) {
+                console.log('err:', err);
+                if(err) {
+                    reject(err);
+                }
+                else {
+                    resolve();
+                }
+            });
+        });
+
+    });
+}
+
+
+function deleteComponentDirectory(name) {
+    return new Promise(function(resolve, reject) {
+        rmdirAsync.rmdirAsync(COMPONENTS_ROOT + '/' + name, function(err) {
+            console.log(err);
+            if(err) {
+                reject(err);
+            }
+            else {
+                resolve();
+            }
+        });
+    });
+}
+
+
+app.delete('/api/component', function(req, res) {
+    var name = req.body.name;
+    var deleteReference = deleteComponentFromMetadata(name);
+    var deleteFiles = deleteComponentDirectory(name);
+    Promise.all([deleteReference, deleteFiles]).then(function(value) {
+        console.log('Component deleted');
+        console.log('value:', value);
+        res.send({
+            componentName: name,
+            status: 'OK'
+        });
+    })
+    .catch(function(err) {
+        console.log('fail!');
+        console.error(err);
+    })
+    ;
+});
+
 
 app.get('/component/:name', function(req, res) {
     console.log('Trying to get component named', req.params.name);
@@ -71,9 +133,11 @@ app.get('/component/:name', function(req, res) {
 
 });
 
+
 app.listen(3000, function () {
     console.log('App listening on port 3000!');
 });
+
 
 function extractElementName(code) {
     var name;
