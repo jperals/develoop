@@ -31,9 +31,10 @@
             <span flex class="item-content"></span>
             <core-icon class="item-content" icon="expand-more"></core-icon>
             <template repeat="{{list}}">
-              <a href="#{{label}}" class="simple-item" tag="{{id}}" loaded?="{{importsLoaded}}" ishidden?="{{isHidden}}">
+              <div class="simple-item" tag="{{id}}" loaded?="{{importsLoaded}}" ishidden?="{{isHidden}}">
                 {{label}}
-              </a>
+                <a class="edit-link" href="#{{label}}">Edit</a>
+              </div>
             </template>
 
           </core-submenu>
