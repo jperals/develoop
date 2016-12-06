@@ -132,7 +132,7 @@
   <dom-serializer id="serializer"></dom-serializer>
   <design-state id="state" on-state-change="{{undoStateChange}}"></design-state>
   <design-gitlab-info id="saveDialogInfo" token="{{gitlabToken}}" component-name="{{componentName}}"></design-gitlab-info>
-  <component-save-dialog id="saveDialog" token="{{gitlabToken}}" component-name="{{componentName}}" on-files-loaded="{{documentLoaded}}" on-files-saved="{{documentSaved}}" on-files-updated="{{documentSaved}}" on-token-changed="{{tokenChangeHandler}}"></component-save-dialog>
+  <component-save-dialog id="saveDialog" token="{{gitlabToken}}" component-name="{{componentName}}" on-files-loaded="{{documentLoaded}}" on-files-saved="{{documentSaved}}" on-files-updated="{{documentSaved}}""></component-save-dialog>
 
   <div id="toast"  class="{{ {showing: toastShowing } | tokenList }}">
     <div>{{toast}}</div>
