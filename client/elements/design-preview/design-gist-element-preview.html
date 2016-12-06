@@ -11,7 +11,7 @@ license that can be found in the LICENSE file.
 
 <polymer-element name="design-gist-element-preview" extends="design-preview-iframe">
 <template>
-  <component-save-dialog id="persist"></component-save-dialog>
+  <component-save-dialog id="persist" on-files-loaded="{{documentLoaded}}"></component-save-dialog>
   <design-gitlab-info id="info"></design-gitlab-info>
   <shadow></shadow>
 </template>
@@ -21,7 +21,7 @@ license that can be found in the LICENSE file.
 Polymer({
   
   open: function(id) {
-    document.getElementById('persist').load(id);
+    this.$.persist.load(id);
   },
 
   documentLoaded: function(e, content) {

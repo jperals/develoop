@@ -39,7 +39,7 @@
   <core-toolbar id="appbar" class="narrow">
 
     <core-icon-button title="Toggle Code/Design" icon="unfold-more" class="rotate {{ {selected: selected === 'code'} | tokenList }}" name="code" on-tap="{{codeToggleAction}}"></core-icon-button>
-    
+
     <span class="separator"></span>
 
     <core-icon-button title="Save" icon="save" on-tap="{{saveAction}}"></core-icon-button>
@@ -58,9 +58,9 @@
   </core-toolbar>
 
   <core-pages flex selected="{{selected}}">
-   
+
     <section name="design" horizontal layout>
-   
+
       <div id="frameContainer" flex>
         <iframe id="frame" src="frame.html"></iframe>
       </div>
@@ -79,7 +79,7 @@
               </div>
 
               <core-icon-button icon="fullscreen" on-tap="{{maximizeElement}}" title="Auto-size"></core-icon-button>
-              
+
               <core-menu-button>
                 <style>
                   .core-selected {
@@ -104,15 +104,15 @@
             </core-toolbar>
             <element-inspector flex id="inspector" on-bind-property="{{applyPropertyBinding}}"></element-inspector>
           </div>
-          
+
           <core-splitter direction="down"></core-splitter>
-          
+
           <div class="paletteTree" vertical layout>
             <core-selector id="tabs" valueAttr="name" selected="{{selectedTool}}">
               <span name="palette">Palette</span>
               <span name="tree">Tree</span>
             </core-selector>
-      
+
             <core-pages id="interior" flex valueAttr="id" selected="{{selectedTool}}">
               <design-palette id="palette" on-palette-drag="{{paletteDrag}}" mode="{{paletteMode}}"></design-palette>
               <design-tree id="tree" on-node-select="{{treeNodeSelected}}"></design-tree>
@@ -148,7 +148,7 @@ Polymer({
 
   ready: function() {
     window.onbeforeunload = this.warnUnload.bind(this);
-    document.addEventListener('keydown', 
+    document.addEventListener('keydown',
         this.keydown.bind(this, window));
     window.designWindowLoaded = this.designWindowLoaded.bind(this);
     window.onhashchange = function() {
@@ -163,7 +163,7 @@ Polymer({
     window.designWindow = this.$.frame.contentWindow;
     designWindow.addEventListener('designer-ready', this.designerReady.bind(this));
     designWindow.addEventListener('design-change', this.designChange.bind(this));
-    designWindow.document.addEventListener('keydown', 
+    designWindow.document.addEventListener('keydown',
       this.keydown.bind(this, designWindow));
   },
 
@@ -227,7 +227,7 @@ Polymer({
     var frameStyle = this.$.frame.style;
     frameStyle.pointerEvents = 'none';
     // adjust event frame of reference
-    var rect = this._frameRect = this._frameRect || 
+    var rect = this._frameRect = this._frameRect ||
         this.$.frame.getBoundingClientRect();
     dragInfo.origin.top -= this._frameRect.top;
     // get searchRoot from frame window.
@@ -340,7 +340,7 @@ Polymer({
 
   applyPropertyBinding: function(event, detail) {
     this.designer.applyPropertyBinding(
-        detail.obj, detail.name, detail.path);  
+        detail.obj, detail.name, detail.path);
   },
 
   codeToggleAction: function() {
@@ -365,7 +365,7 @@ Polymer({
     }
     this.shareWindow = window.open('', 'gist');
     this.save(function() {
-      this.shareWindow.location.href = 'https://gist.github.com/' + 
+      this.shareWindow.location.href = 'https://gist.github.com/' +
           this.fileId;
     });
   },
@@ -377,8 +377,9 @@ Polymer({
     this.previewWindow = window.open('', 'preview');
 
     this.save(function() {
-      this.previewWindow.location.href = 'preview.html#' + this.fileId;
-    });
+      console.log('this.fileId:', this.fileId);
+      this.previewWindow.location.href = 'preview.html#' + this.componentName;
+    }.bind(this));
   },
 
   save: function(callback) {
@@ -386,6 +387,8 @@ Polymer({
     var files = {};
     var content = this.getContent();
     var componentName = this.extractComponentName(content);
+    this.fileId = componentName;
+    this.componentName = componentName;
     files[this.$.saveDialogInfo.fileName] = {content: content};
     var saveCb = function(response) {
       window.location.hash = componentName;
@@ -404,12 +407,8 @@ Polymer({
         saveCb(response);
       }
     };
-    if (this.fileId) {
-      this.$.saveDialog.update(this.fileId, 'designer', true, files, updateCb);
-    } else {
-      this.$.saveDialog.save('designer', true, files, componentName)
-              .then(saveCb);
-    }
+    this.$.saveDialog.save('designer', true, files, componentName)
+            .then(saveCb);
   },
 
   documentSaved: function(event, detail) {

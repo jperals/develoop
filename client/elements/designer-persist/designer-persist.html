@@ -1,5 +1,4 @@
 <link rel="import" href="../../components/polymer/polymer.html">
-<script type="text/javascript" src="../gitlab/gitlab.js"></script>
 
 <polymer-element name="component-save-dialog" attributes="componentname token">
     <template>
@@ -221,8 +220,6 @@
                     console.log('load');
                     let headers = new Headers();
                     headers.append('Content-Type', 'application/json');
-//                let content = files['index.html'].content;
-//                var componentName = this.extractComponentName(content);
                     console.log('componentName:', id);
                     let opts = {
                         headers: headers,
@@ -236,9 +233,7 @@
                                 return response.text();
                             })
                             .then(function(content) {
-//                                window.location.hash = response.componentName;
-                                this.fire('files-saved', content);
-                                this.toast('Saved files to <a href="' + content.html_url + '">' + content.html_url + '</a>');
+                                this.fire('files-loaded', content);
                                 resolve(content);
                             }.bind(this))
                             .catch(function (error) {
