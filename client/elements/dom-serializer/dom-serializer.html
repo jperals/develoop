@@ -256,7 +256,7 @@ Polymer({
   },
 
   dumpRule: function(rule, indent) {
-    if (!rule.style.cssText) {
+    if (!rule.style || !rule.style.cssText || !rule.selectorText) {
       return null;
     }
     indent = indent || '';
