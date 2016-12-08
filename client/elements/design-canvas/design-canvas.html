@@ -73,7 +73,7 @@ Polymer({
 
   attached: function() {
     this.makeDesignHost();
-//    this.styleDesignHost();
+    this.styleDesignHost();
     this.selected = this.designHost;
   },
 
@@ -174,6 +174,7 @@ Polymer({
       r.style.position = 'absolute';
       r.style.left = r.style.top = '0px';
       r.style.height = r.style.width = '100%';
+      r.style.display = 'block';
     }
     // fire a fake resize event so elements that listen to it
     // can update their size
@@ -574,17 +575,20 @@ Polymer({
 
   styleDesignHost: function() {
     var s = this.ruleForElement(this.designHost).style;
-    if (!s.position) {
-      s.position = 'absolute';
-    }
-    var size = '100%';
-    if (!s.width) {
-      s.width = size;
-    }
-    if (!s.height) {
-      s.height = size;
-    }
-    s.boxSizing = 'border-box';
+//    if (!s.position) {
+//      s.position = 'absolute';
+//    }
+//    var size = '100%';
+//    if (!s.width) {
+//      s.width = size;
+//    }
+//    if (!s.height) {
+//      s.height = size;
+//    }
+//    s.boxSizing = 'border-box';
+    s.display = 'block';
+    s['min-width'] = '30px';
+    s['min-height'] = '30px';
   },
 
   setupStyleElement: function() {
