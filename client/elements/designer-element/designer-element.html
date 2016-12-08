@@ -42,17 +42,16 @@
 
     <span class="separator"></span>
 
-    <core-icon-button title="Save" icon="save" on-tap="{{saveAction}}"></core-icon-button>
-    <!-- shareAction must be triggered from click to allow opening a tab (otherwise can only open a floating window) -->
-    <core-icon-button title="Launch Preview" icon="launch" on-click="{{previewAction}}"></core-icon-button>
     <core-icon-button title="Create New Component" icon="add" on-tap="{{new}}"></core-icon-button>
+    <core-icon-button title="Save" icon="save" on-tap="{{saveAction}}"></core-icon-button>
+    <core-icon-button title="Launch Preview" icon="launch" on-click="{{previewAction}}"></core-icon-button>
 
     <div class="design-controls" horizontal center layout hidden?="{{selected == 'code'}}">
       <span class="separator"></span>
       <core-icon-button title="Undo" disabled?="{{!$.state.canBack}}" icon="image:rotate-left" on-tap="{{undoAction}}"></core-icon-button>
       <core-icon-button title="Redo" disabled?="{{!$.state.canForward}}" icon="image:rotate-right" on-tap="{{redoAction}}"></core-icon-button>
       <span class="separator" hidden?="{{selected == 'code'}}"></span>
-      <core-icon-button title="Toggle Fullwidth" icon="drawer" class="{{ {selected: maximized} | tokenList}}" on-tap="{{fullscreenAction}}"></core-icon-button>
+      <core-icon-button title="Toggle Fullwidth" icon="fullscreen" class="{{ {selected: maximized} | tokenList}}" on-tap="{{fullscreenAction}}"></core-icon-button>
     </div>
 
   </core-toolbar>
@@ -78,7 +77,7 @@
                 {{selectedName}}
               </div>
 
-              <core-icon-button icon="fullscreen" on-tap="{{maximizeElement}}" title="Auto-size"></core-icon-button>
+              <!--<core-icon-button icon="fullscreen" on-tap="{{maximizeElement}}" title="Auto-size"></core-icon-button>-->
 
               <core-menu-button>
                 <style>
