@@ -55,6 +55,7 @@ core-submenu::shadow #submenu {
   padding-left: 24px;
   text-decoration: none;
   position: relative;
+  cursor: pointer;
 }
 
 .simple-item:hover {

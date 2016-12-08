@@ -34,10 +34,9 @@
             <span flex class="item-content"></span>
             <core-icon class="item-content" icon="expand-more"></core-icon>
             <template repeat="{{list}}">
-              <div class="simple-item" tag="{{id}}" loaded?="{{importsLoaded}}" ishidden?="{{isHidden}}">
+              <div class="simple-item" tag="{{id}}" loaded?="{{importsLoaded}}" item-id="{{label}}" on-tap="{{edit}}" ishidden?="{{isHidden}}">
                 {{label}}
                 <span class="item-actions">
-                  <core-icon icon="create" class="action" item-id="{{label}}" on-tap="{{edit}}" title="Edit"></core-icon>
                   <core-icon icon="delete" class="action" item-id="{{label}}" on-tap="{{remove}}" title="Remove"></core-icon>
                 </span>
               </div>
