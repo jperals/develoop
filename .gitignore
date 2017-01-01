@@ -2,5 +2,4 @@ components
 /.htaccess
 *.sublime-project
 *.sublime-workspace
-settings.js
 npm-debug.log
