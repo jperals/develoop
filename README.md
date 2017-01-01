@@ -1,180 +1,23 @@
-designer
+develoop
 ========
 
-# Getting Started
+This is a proof of concept for a web development tool that allows designers and developers to work together in a better way.
+
+It is very much work in progress based on [Polymer Designer](https://github.com/Polymer/designer). Starting from the [designer1 branch](https://github.com/Polymer/designer/tree/designer1), I basically hacked its save and load functionality so that users can save the app being edited as a component itself.
+
+This way, designers can build complex apps by creating each building block one by one and gradually putting them together. Developers would support the process by coding the fine tuned behaviors that require programming. As the platform seamlessly supports coding and visual editing, everything could happen in the same place without the need of the usual abrupt division between design and development phases.
+
+## Getting Started
 
 1. Clone the repo and `cd` in
-2. Run `git fetch --tags` to get all releases
-3. Run `git checkout [LATEST TAG]`, ex: `git checkout 0.4.2`
-4. From the root of the project run `bower install`
-5. Start a local server, ex: `python -m SimpleHTTPServer`
-6. Navigate to http://localhost:[YOUR SERVER PORT]
+2. Run `bower install`
+3. Run `npm install`
+4. Run `node .`
+5. Navigate to http://localhost:3000
 
-## Things to know
+Right now, to create a new component you need to toggle the code mode on by pressing the `<>` button and manually edit the `name` attribute of the `polymer-element`. Then click on the save button, and your element will be available as a new component under the `Components` category in the design palette when you switch back to design mode.
 
-### Bower Resolutions
+## Rough edges
 
-When you run `bower install` it may ask you to pick a version of a particular dependency. Because the designer is still very bleeding edge and we're constantly fixing bugs, we often recommend you choose the `master` option if it's presented. You can preserve this resolution by preceding it with a bang "!" symbol. Long term we hope to eliminate the need for this action by making sure all dependencies in designer work with the current tag and do not require resolutions.
-
-## Adding your own components to designer
-
-1. Add a `metadata.html` file to your component's repo
-2. Add your component as a dependency in designer's `bower.json`
-3. Run `bower install` to fetch your component
-4. Add the path to your `metadata.html` file to the `index.html` file
-
-``` html
-<!-- designer/index.html -->
-<script>
-  var metadata = [
-    '../components/core-elements/metadata.html',
-    '../components/more-elements/metadata.html',
-    '../components/my-element/metadata.html'  // <-- add your element here
-  ];
-</script>
-```
-
-### metadata.html
-
-The `metadata.html` file instructs the designer on how to work with your component. The `metadata.html` consists of an `x-meta` tag that contains:
-
-- A `template` for your element. The contents of this template are what the user will be dragging onto the stage, so it can be used to stub out a version of your element with default attribute values and inline styles.
-- **Optional** `property` elements for generating [property editors](#property-editors) in the Properties panel.
-- A `template`for your element's HTML import.
-
-``` html
-<!-- Example metadata.html -->
-<x-meta id="google-map" label="Google Map" group="Google Web Components">
-
-  <template>
-    <google-map zoom="18" style="width: 400px; height: 400px; display: block;"></google-map>
-  </template>
-
-  <property name="zoom"
-            kind="number">
-  </property>
-  
-  <property name="mapType"
-            kind="select"
-            options="roadmap,satellite,hybrid,terrain">
-  </property>
-
-  <!-- Make sure you put your element import last! -->
-  <!-- https://github.com/Polymer/designer/issues/59 -->
-  <template id="imports">
-    <link rel="import" href="google-map.html">
-  </template>
-
-</x-meta>
-```
-
-The `x-meta` element supports the following attributes:
-
-Attribute     | Type        | Required?   | Description
----           | ---         | ---         | ---
-`id`          | *String*    | `true`      | A unique id for your element
-`label`       | *String*    | `true`      | The name your element will display in the Element's Palette
-`group`       | *String*    | `false`     | The group that will contain your element in the Element's Palette
-`isContainer` | *Boolean*   | `false`     | Indicates if your element can contain other elements
-
-### Property Editors
-
-Every element will generate property editors for all of its published properties (anything appearing in the `attributes` attribute or the `publish` object), and any attributes defined in its `metadata.html` template.
-
-The default behavior is to generate string editors for these properties. By using a `property` element, you may hint to the designer that it should display a more specific editor. Below is a list of all of the currently supported editor types with examples.
-
-#### String
-
-A basic string editor
-
-<strong>Example:</strong>
-
-``` html
-<property name="username" kind="string"></property>
-```
-
-#### Number
-
-A basic number editor. Will call `Number(value)` to insure values are processed correctly.
-
-<strong>Example:</strong>
-
-``` html
-<property name="count" kind="number"></property>
-```
-
-#### Color
-
-A color picker
-
-<strong>Example:</strong>
-
-``` html
-<property name="color" kind="color"></property>
-```
-
-#### Boolean
-
-A checkbox
-
-<strong>Example:</strong>
-
-``` html
-<property name="showMapMarker" kind="boolean"></property>
-```
-
-#### Select
-
-A dropdown for selecting from a list of options.
-
-Attribute     | Type        | Description
----           | ---         | ---
-`options`     | *String*    | A comma separated list of options
-
-<strong>Example:</strong>
-
-``` html
-<property name="sizes" kind="select" options="small,medium,large"></property>
-```
-
-#### Text
-
-A `textarea` for long form text content.
-
-<strong>Example:</strong>
-
-``` html
-<property name="description" kind="text"></property>
-```
-
-#### JSON
-
-A `textarea` for JSON content.
-
-<strong>Example:</strong>
-
-``` html
-<property name="user" kind="json"></property>
-```
-
-#### Range
-
-A range slider
-
-Attribute     | Type        | Description
----           | ---         | ---
-`min`          | *Number*   | Minimum range value
-`max`       | *Number*      | Maximum range value
-`step`       | *Number*     | The increment used when increasing or decreasing the range slider
-`defaultValue` | *Number*   | Initial value for range slider
-
-<strong>Example:</strong>
-
-``` html
-<property name="total" kind="range" min="1.0" max="5.0" step="0.1" defaultValue="3.5"></property>
-```
-
-### Deploying the project
-
-- `./deploy.sh`
-- profit!
+- This codebase is based on Designer 1 and Polymer 0.5, which are over two years old. Somehow upgrading it should be possible, but not without a considerable amount of time.
+- Components are saved in `server/components/metdata.html` without taking care of repetitions. This is ugly but doesn't really affect the tool's behavior as a proof of concept.
